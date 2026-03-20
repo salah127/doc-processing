@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+pytesseract
+opencv-python-headless
+pdfplumber
+pandas
+scikit-learn
+spacy
+streamlit
+python-multipart
+requests
+faker
+reportlab
+pymongo
+flask

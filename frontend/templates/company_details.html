@@ -1,0 +1,133 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ company.nom }} - ScanDocs{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <!-- Breadcrumbs -->
+    <nav class="flex mb-8 items-center text-sm font-medium text-slate-500">
+        <a href="{{ url_for('companies') }}" class="hover:text-red-600 transition-colors">Entreprises</a>
+        <svg class="w-4 h-4 mx-2 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+        <span class="text-slate-900">{{ company.nom }}</span>
+    </nav>
+
+    <!-- Company Header Header Card -->
+    <div class="bg-white rounded-3xl shadow-xl border border-slate-100 p-8 md:p-12 mb-12 relative overflow-hidden">
+        <!-- Background blob -->
+        <div class="absolute -top-24 -right-24 w-96 h-96 bg-red-50 rounded-full mix-blend-multiply filter blur-3xl pointer-events-none opacity-50"></div>
+        
+        <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+            <div class="flex items-center gap-6">
+                <!-- Company Icon -->
+                <div class="w-20 h-20 bg-red-600 text-white rounded-3xl flex items-center justify-center shadow-2xl shadow-red-200">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                </div>
+                
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-2">{{ company.nom }}</h1>
+                    <div class="flex flex-wrap items-center gap-4 text-slate-500 font-medium">
+                        <div class="flex items-center gap-1.5 bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
+                            <span class="text-xs uppercase tracking-wider text-slate-400">SIREN</span>
+                            <span class="text-sm font-bold text-slate-700 font-mono">{{ company.siren }}</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
+                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.828a2 2 0 01-2.828 0L6.343 16.657a4 4 0 115.657-5.657L12 12l.707-.707a4 4 0 115.657 5.657z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span class="text-sm text-slate-600">{{ company.adresse or "Adresse inconnue" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex gap-4">
+                <div class="text-center bg-red-50 px-6 py-4 rounded-3xl border border-red-100">
+                    <span class="block text-2xl font-black text-red-600 mb-0.5">{{ documents|length }}</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-red-400">Docs total</span>
+                </div>
+                <!-- Action button to upload specifically for this company if we wanted to -->
+                <a href="{{ url_for('upload_page') }}" class="inline-flex items-center px-6 py-4 bg-slate-900 text-white rounded-3xl text-sm font-bold hover:shadow-2xl transition-all h-fit">
+                    Importer un doc
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Documents List Section -->
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+        <div class="px-8 py-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+            <h2 class="text-xl font-bold text-slate-800 tracking-tight">Bibliothèque de documents</h2>
+            <div class="flex items-center gap-2">
+                <span class="w-3 h-3 bg-red-500 rounded-full inline-block"></span>
+                <span class="text-sm font-bold text-slate-400 uppercase tracking-widest">{{ documents|length }} documents indexés</span>
+            </div>
+        </div>
+        
+        <div class="divide-y divide-slate-100">
+            {% for doc in documents %}
+            <div class="p-6 transition-all hover:bg-slate-50 group flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-white group-hover:text-red-500 group-hover:shadow-md transition-all">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="text-lg font-bold text-slate-900 group-hover:text-red-600 transition-colors line-clamp-1">{{ doc.filename }}</div>
+                        <div class="flex items-center gap-3 mt-1 underline-offset-4 decoration-slate-200">
+                            <span class="text-xs font-bold text-slate-400 uppercase px-2 py-0.5 bg-slate-100 rounded tracking-widest">{{ doc.predicted_type or 'unknown' }}</span>
+                            <span class="text-xs font-mono text-slate-300">ID: {{ doc.document_id[:8] }}...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-4 w-full md:w-auto">
+                    <div class="flex flex-col text-right">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1.5">Détecté le</span>
+                        <span class="text-sm font-bold text-slate-600">{{ doc.uploaded_at[:10] }}</span>
+                    </div>
+
+                    <div class="h-8 w-px bg-slate-100 hidden md:block"></div>
+
+                    <div class="flex items-center gap-2">
+                        {% if doc.is_valid %}
+                        <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-100 text-green-700 border border-green-200 shadow-sm shadow-green-50">
+                            <div class="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                            <span class="text-xs font-bold uppercase tracking-widest text-green-800">Conforme</span>
+                        </div>
+                        {% else %}
+                        <div class="flex flex-col gap-1.5 items-end">
+                            <a href="{{ url_for('anomalie') }}" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-100 text-red-700 border border-red-200 shadow-sm shadow-red-50 hover:bg-red-200 transition-all cursor-pointer">
+                                <div class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></div>
+                                <span class="text-xs font-bold uppercase tracking-widest text-red-800">Anomalie détectée</span>
+                            </a>
+                            {% if doc.anomaly_causes %}
+                            <div class="text-[9px] font-bold text-red-400 max-w-[200px] leading-tight text-right italic">
+                                {{ doc.anomaly_causes | join(' | ') }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="py-20 text-center">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-slate-50 rounded-full text-slate-200 mb-4">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900">Aucun document pour cette entreprise</h3>
+                <p class="text-slate-500 max-w-sm mx-auto mt-2">Nous n'avons pas encore indexé de documents liés au SIREN de cette société.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends "layout.html" %}
+
+{% block title %}Accueil - ScanDocs AI{% endblock %}
+
+{% block content %}
+<div class="relative overflow-hidden pt-20 pb-16 lg:pt-32 lg:pb-28">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="lg:grid lg:grid-cols-12 lg:gap-8 gap-12 flex flex-col items-center lg:items-start text-center lg:text-left">
+            <div class="sm:text-center lg:text-left lg:col-span-6">
+                <div class="inline-flex items-center px-4 py-2 rounded-full bg-red-50 text-red-600 text-xs font-extrabold uppercase tracking-widest border border-red-100 mb-8 animate-fade-in shadow-sm">
+                    <span class="relative flex h-2 w-2 mr-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
+                    </span>
+                    Intelligence Artificielle de pointe
+                </div>
+                <h1 class="text-5xl tracking-tight font-black text-slate-900 sm:text-6xl md:text-7xl mb-8 leading-tight">
+                    Optimisez votre <span class="bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-rose-500">gestion documentaire</span>.
+                </h1>
+                <p class="mt-3 text-lg text-slate-500 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl max-w-2xl leading-relaxed font-medium">
+                    ScanDocs analyse et valide vos documents administratifs instantanément. Détection de fraudes, extraction SIRET et vérification de conformité en un clic.
+                </p>
+                <div class="mt-10 sm:flex sm:justify-center lg:justify-start gap-4">
+                    <a href="{{ url_for('upload_page') }}" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-bold rounded-2xl text-white bg-slate-900 hover:bg-black transition-all shadow-xl shadow-slate-200 hover:-translate-y-1">
+                        Scanner mon premier document
+                    </a>
+                    <a href="{{ url_for('companies') }}" class="mt-3 sm:mt-0 w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 border border-slate-200 text-base font-bold rounded-2xl text-slate-900 bg-white hover:bg-slate-50 transition-all shadow-sm">
+                        Consulter l'annuaire
+                    </a>
+                </div>
+                
+                <div class="mt-12 flex items-center gap-8 justify-center lg:justify-start grayscale opacity-50">
+                    <div class="flex flex-col">
+                        <span class="text-2xl font-black text-slate-900 leading-none mb-1">99.8%</span>
+                        <span class="text-[10px] uppercase font-extrabold text-slate-400 tracking-widest">Précision OCR</span>
+                    </div>
+                    <div class="h-10 w-px bg-slate-200"></div>
+                    <div class="flex flex-col">
+                        <span class="text-2xl font-black text-slate-900 leading-none mb-1">20ms</span>
+                        <span class="text-[10px] uppercase font-extrabold text-slate-400 tracking-widest">Analyse temps réel</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 lg:mt-0 lg:col-span-6 relative">
+                <div class="relative mx-auto w-full rounded-3xl shadow-2xl overflow-hidden border border-white p-4 glass group">
+                    <div class="absolute inset-x-0 bottom-0 top-0 h-full w-full bg-gradient-to-t from-white/20"></div>
+                    <div class="aspect-video bg-white rounded-2xl overflow-hidden shadow-inner flex items-center justify-center border border-slate-100 group-hover:scale-[1.02] transition-transform duration-700">
+                        <div class="flex flex-col items-center">
+                            <div class="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center text-red-600 mb-6 shadow-2xl shadow-red-200">
+                                <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 0012 30c3.517 0 6.799-1.009 9.571-2.753m-2.04-3.44l-.09.054A10.003 10.003 0 0030 12c0-3.517-1.009-6.799-2.753-9.571m-3.44 2.04l.054-.09A10.003 10.003 0 0012 3c-3.517 0-6.799 1.009-9.571 2.753" />
+                                </svg>
+                            </div>
+                            <span class="text-xl font-bold text-slate-800">Interface IA Vision</span>
+                            <span class="text-xs font-bold text-red-500 uppercase tracking-widest mt-2 px-2 py-0.5 bg-red-50 rounded italic animate-pulse">Scanning Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white py-24 sm:py-32 border-t border-slate-100">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl lg:text-center mb-20 px-8">
+            <h2 class="text-base font-extrabold leading-7 text-red-600 uppercase tracking-[0.2em] italic mb-4">Fonctionnalités Premium</h2>
+            <p class="mt-2 text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">Pourquoi choisir ScanDocs ?</p>
+            <p class="mt-6 text-lg leading-8 text-slate-500 font-medium italic">Une plateforme conçue pour les professionnels exigeants, alliant puissance algorithmique et design épuré.</p>
+        </div>
+        
+        <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
+            <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
+                <div class="flex flex-col group card-hover bg-slate-50 p-8 rounded-[2.5rem] border border-slate-100 hover:bg-white hover:shadow-xl hover:border-red-100 transition-all">
+                    <dt class="flex items-center gap-x-4 text-xl font-black leading-7 text-slate-900">
+                        <div class="h-14 w-14 flex items-center justify-center rounded-2xl bg-red-600 text-white shadow-lg shadow-red-100 group-hover:scale-110 transition-transform">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        Scan Rapide
+                    </dt>
+                    <dd class="mt-6 flex flex-auto flex-col text-base leading-7 text-slate-500">
+                        <p class="flex-auto font-medium">Scannez vos documents directement depuis votre appareil. L'interface intuitive vous permet de capturer des fichiers en quelques secondes avec une résolution optimisée par IA.</p>
+                    </dd>
+                </div>
+                
+                <div class="flex flex-col group card-hover bg-slate-50 p-8 rounded-[2.5rem] border border-slate-100 hover:bg-white hover:shadow-xl hover:border-red-100 transition-all">
+                    <dt class="flex items-center gap-x-4 text-xl font-black leading-7 text-slate-900">
+                        <div class="h-14 w-14 flex items-center justify-center rounded-2xl bg-red-600 text-white shadow-lg shadow-red-100 group-hover:scale-110 transition-transform">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                            </svg>
+                        </div>
+                        IA d'Extraction
+                    </dt>
+                    <dd class="mt-6 flex flex-auto flex-col text-base leading-7 text-slate-500">
+                        <p class="flex-auto font-medium">Notre moteur analyse les documents pour extraire les données essentielles comme le numéro SIRET, la date, et les montants financiers avec une fiabilité inégalée.</p>
+                    </dd>
+                </div>
+                
+                <div class="flex flex-col group card-hover bg-slate-50 p-8 rounded-[2.5rem] border border-slate-100 hover:bg-white hover:shadow-xl hover:border-red-100 transition-all">
+                    <dt class="flex items-center gap-x-4 text-xl font-black leading-7 text-slate-900">
+                        <div class="h-14 w-14 flex items-center justify-center rounded-2xl bg-red-600 text-white shadow-lg shadow-red-100 group-hover:scale-110 transition-transform">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                        </div>
+                        Conformité & Fraude
+                    </dt>
+                    <dd class="mt-6 flex flex-auto flex-col text-base leading-7 text-slate-500">
+                        <p class="flex-auto font-medium">Vérification automatique contre la base SIRENE et détection d'anomalies mathématiques pour prévenir les erreurs et les tentatives de fraude.</p>
+                    </dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+</div>
+{% endblock %}

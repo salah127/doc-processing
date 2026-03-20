@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+
+{% block title %}Entreprises - ScanDocs{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
+        <div>
+            <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Annuaire des Entreprises</h1>
+            <p class="text-slate-500 max-w-2xl">Consultez la liste des entreprises référencées et accédez à l'ensemble
+                de leurs documents administratifs.</p>
+        </div>
+
+        <div class="flex items-center gap-3 w-full md:w-auto">
+            <div class="relative flex-grow md:w-72">
+                <input type="text" id="companySearch" placeholder="Rechercher une entreprise..."
+                    class="w-full bg-white border border-slate-200 rounded-2xl pl-10 pr-4 py-3 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all shadow-sm">
+                <svg class="w-5 h-5 text-slate-400 absolute left-3 top-3.5" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+            <div
+                class="bg-slate-200 text-slate-600 px-4 py-3 rounded-2xl text-sm font-bold shadow-sm whitespace-nowrap">
+                {{ companies|length }} sociétés
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="companyGrid">
+        {% for company in companies %}
+        <div class="group bg-white rounded-3xl p-6 shadow-sm border border-slate-100 hover:shadow-xl hover:border-red-100 transition-all card-hover company-card"
+            data-name="{{ company.nom|lower }}">
+            <div class="flex items-start justify-between mb-6">
+                <div
+                    class="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-red-600 group-hover:bg-red-50 transition-colors">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                </div>
+                <span
+                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600">
+                    Siren : {{ company.siren }}
+                </span>
+            </div>
+
+            <div class="mb-6">
+                <h3 class="text-xl font-bold text-slate-900 group-hover:text-red-600 transition-colors mb-1 truncate">{{
+                    company.nom }}</h3>
+                <p class="text-sm text-slate-500 line-clamp-1">{{ company.address or 'Adresse non renseignée' }}</p>
+            </div>
+
+            <div class="flex items-center justify-between pt-4 border-t border-slate-50">
+                <div class="flex flex-col">
+                    <span class="text-xs text-slate-400 font-medium uppercase tracking-wider">Documents</span>
+                    <span class="text-lg font-bold text-slate-700">{{ company.doc_count or '?' }}</span>
+                </div>
+                <a href="{{ url_for('company_documents', siren=company.siren) }}"
+                    class="inline-flex items-center px-4 py-2 bg-slate-900 text-white text-sm font-bold rounded-xl hover:bg-black transition-all">
+                    Voir les docs
+                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-span-full py-20 text-center">
+            <div
+                class="inline-flex items-center justify-center w-20 h-20 bg-slate-100 rounded-full text-slate-400 mb-4">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900">Aucune entreprise trouvée</h3>
+            <p class="text-slate-500">Essayez d'importer des entreprises en base de données.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    document.getElementById('companySearch').addEventListener('input', function (e) {
+        const term = e.target.value.toLowerCase();
+        const cards = document.querySelectorAll('.company-card');
+        cards.forEach(card => {
+            const name = card.getAttribute('data-name');
+            if (name.includes(term)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}

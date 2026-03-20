@@ -1,0 +1,147 @@
+{% extends "layout.html" %}
+
+{% block title %}Bibliothèque - ScanDocs AI{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-8">
+        <div>
+            <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight mb-3">Bibliothèque Documentaire</h1>
+            <p class="text-slate-500 max-w-2xl font-medium italic">Accédez à l'ensemble de vos documents analysés. Filtrez par état de conformité ou par entreprise pour une gestion efficace.</p>
+        </div>
+        
+        <div class="inline-flex items-center px-6 py-4 rounded-3xl bg-white border border-slate-100 shadow-sm">
+            <span class="text-3xl font-black text-slate-900 mr-3">{{ total }}</span>
+            <span class="text-xs font-extrabold uppercase tracking-widest text-slate-400">fichiers indexés</span>
+        </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 mb-12 relative overflow-hidden">
+        <form action="{{ url_for('documents') }}" method="GET" class="flex flex-wrap items-center gap-4 relative z-10">
+            <div class="flex-grow min-w-[200px]">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 pl-1">Filtrer par état</label>
+                <select name="status" class="w-full bg-slate-50 border border-slate-100 rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all shadow-inner">
+                    <option value="">Tous les états</option>
+                    <option value="valid" {% if request.args.get('status') == 'valid' %}selected{% endif %}>✅ Conformes uniquement</option>
+                    <option value="error" {% if request.args.get('status') == 'error' %}selected{% endif %}>❌ Anomalies détectées</option>
+                </select>
+            </div>
+
+            <div class="flex-grow min-w-[200px]">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 pl-1">Type de document</label>
+                <select name="type" class="w-full bg-slate-50 border border-slate-100 rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all shadow-inner">
+                    <option value="">Tous les types</option>
+                    <option value="facture" {% if request.args.get('type') == 'facture' %}selected{% endif %}>📄 Facture</option>
+                    <option value="devis" {% if request.args.get('type') == 'devis' %}selected{% endif %}>📝 Devis</option>
+                    <option value="vigilance" {% if request.args.get('type') == 'vigilance' %}selected{% endif %}>🛡️ Vigilance</option>
+                </select>
+            </div>
+            
+            <div class="flex-grow min-w-[200px]">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 pl-1">Entreprise</label>
+                <input type="text" name="company" value="{{ request.args.get('company', '') }}" placeholder="Nom de la société..." 
+                       class="w-full bg-slate-50 border border-slate-100 rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-red-500 outline-none transition-all shadow-inner">
+            </div>
+
+            <div class="flex-grow min-w-[200px]">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 pl-1">SIRET</label>
+                <input type="text" name="siret" value="{{ request.args.get('siret', '') }}" placeholder="14 chiffres..." 
+                       class="w-full bg-slate-50 border border-slate-100 rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-red-500 outline-none transition-all shadow-inner font-mono">
+            </div>
+
+            <div class="flex items-end self-end gap-2 pt-6">
+                <button type="submit" class="bg-slate-900 text-white px-8 py-3.5 rounded-2xl text-sm font-bold hover:bg-black transition-all shadow-lg shadow-slate-200">
+                    Appliquer
+                </button>
+                <a href="{{ url_for('documents') }}" class="bg-slate-100 text-slate-500 px-6 py-3.5 rounded-2xl text-sm font-bold hover:bg-slate-200 transition-all">
+                    Reset
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Table Section -->
+    <div class="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 border-b border-slate-100">
+                        <th class="px-8 py-5 text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.2em] whitespace-nowrap">Détails document</th>
+                        <th class="px-8 py-5 text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.2em] whitespace-nowrap">Emetteur / SIRET</th>
+                        <th class="px-8 py-5 text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.2em] whitespace-nowrap text-center">Type</th>
+                        <th class="px-8 py-5 text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.2em] whitespace-nowrap text-center">Statut Conformité</th>
+                        <th class="px-8 py-5 text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.2em] whitespace-nowrap text-right">Datation</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50 font-medium">
+                    {% for doc in documents %}
+                    <tr class="hover:bg-slate-50/50 transition-colors group">
+                        <td class="px-8 py-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-red-50 group-hover:text-red-500 transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-bold text-slate-900 line-clamp-1 decoration-red-200 group-hover:underline underline-offset-4">{{ doc.filename }}</div>
+                                    <div class="text-[10px] font-mono text-slate-300 tracking-tighter">{{ doc.document_id }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-8 py-6">
+                            <div class="text-sm font-bold text-slate-700 leading-tight mb-1">{{ doc.company_name }}</div>
+                            <div class="text-xs font-mono text-slate-400 tracking-widest">{{ doc.siret }}</div>
+                        </td>
+                        <td class="px-8 py-6 text-center">
+                            <span class="inline-flex px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest border border-slate-200">
+                                {{ doc.predicted_type or 'unknown' }}
+                            </span>
+                        </td>
+                        <td class="px-8 py-6 text-center">
+                            {% if doc.is_valid %}
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-green-50 text-green-700 border border-green-100 italic">
+                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                                Conforme
+                            </span>
+                            {% else %}
+                            <div class="flex flex-col gap-2 items-center">
+                                <a href="{{ url_for('anomalie') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-red-50 text-red-700 border border-red-100 hover:bg-red-100 transition-all italic">
+                                    <span class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse shadow-sm shadow-red-200"></span>
+                                    Anomalie
+                                </a>
+                                {% if doc.anomaly_causes %}
+                                <div class="text-[9px] font-bold text-red-400 max-w-[150px] leading-tight text-center">
+                                    {{ doc.anomaly_causes | join(' | ') }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td class="px-8 py-6 text-right">
+                            <div class="text-xs font-bold text-slate-500 italic">{{ doc.uploaded_at[:10] }}</div>
+                            <div class="text-[10px] font-medium text-slate-300">{{ doc.uploaded_at[11:16] }}</div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="px-8 py-24 text-center">
+                            <div class="flex flex-col items-center">
+                                <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-200 mb-6">
+                                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-bold text-slate-900">Aucun document ne correspond</h3>
+                                <p class="text-slate-500 mt-2 max-w-sm">Ajustez vos filtres de recherche ou commencez à importer de nouveaux documents.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

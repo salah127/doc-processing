@@ -1,0 +1,54 @@
+services:
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27027:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app/backend
+      - ./data:/app/data
+    environment:
+      - PYTHONPATH=/app
+      - MONGO_URI=mongodb://mongodb:27017/hackathon
+    depends_on:
+      - mongodb
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./frontend:/app/frontend
+      - ./data:/app/data
+    environment:
+      - BACKEND_URL=http://backend:8000
+    depends_on:
+      - backend
+
+  frontend-flask:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./frontend:/app/frontend
+      - ./data:/app/data
+    environment:
+      - BACKEND_URL=http://backend:8000
+    command: python frontend/flask_app.py
+    depends_on:
+      - backend
+
+volumes:
+  mongo_data:

@@ -1,0 +1,153 @@
+{% extends "layout.html" %}
+
+{% block title %}Scanner - ScanDocs AI{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-12">
+    <div class="text-center mb-16">
+        <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight mb-4">Traitement Intelligent</h1>
+        <p class="text-slate-500 max-w-lg mx-auto font-medium italic">Sélectionnez vos factures, devis ou attestations de vigilance. Notre IA s'occupe de l'extraction et de la validation.</p>
+    </div>
+
+    <!-- Upload Card -->
+    <div class="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 p-10 md:p-14 relative overflow-hidden">
+        <!-- Background blob -->
+        <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-red-50 rounded-full mix-blend-multiply filter blur-3xl pointer-events-none opacity-50"></div>
+
+        <!-- Drag & Drop Zone -->
+        <div id="drop-zone" onclick="document.getElementById('file-upload').click()" 
+             class="border-4 border-dashed border-slate-200 rounded-[2rem] p-16 transition-all hover:border-red-400 hover:bg-red-50/50 group text-center cursor-pointer mb-10 relative z-10">
+            <input type="file" id="file-upload" class="hidden" accept="application/pdf, image/*" multiple>
+            
+            <div class="flex flex-col items-center">
+                <div class="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center text-slate-300 group-hover:bg-red-500 group-hover:text-white transition-all shadow-sm mb-6">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                </div>
+                <span class="text-2xl font-black text-slate-800 tracking-tight group-hover:text-red-600 transition-colors">Déposez vos documents ici</span>
+                <span class="text-sm font-bold text-slate-400 mt-3 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z" clip-rule="evenodd"></path>
+                    </svg>
+                    PDF, JPG, PNG (Max 10 Mo)
+                </span>
+            </div>
+        </div>
+
+        <!-- Selected Files List -->
+        <div id="file-list" class="mb-10 space-y-3">
+            <!-- Selected files will appear here -->
+        </div>
+
+        <button id="upload-btn" onclick="uploadFiles()" 
+                class="w-full bg-slate-900 text-white font-black py-5 rounded-2xl shadow-xl shadow-slate-200 hover:bg-black transition-all transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-lg tracking-wide uppercase">
+            Lancer l'Analyse IA
+        </button>
+
+        <!-- Status & Progress -->
+        <div id="status-container" class="mt-12 hidden">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                    <span id="status-text" class="font-black text-slate-800 tracking-tight uppercase text-sm">Traitement neuronal en cours...</span>
+                </div>
+                <span id="status-percent" class="text-red-600 font-black text-xl italic">0%</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-4 p-1 shadow-inner">
+                <div id="status-bar" class="bg-red-600 h-2 rounded-full transition-all duration-700 shadow-sm" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Results Grid -->
+        <div id="results-container" class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
+            <!-- Results cards injected here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    const fileInput = document.getElementById('file-upload');
+    const fileList = document.getElementById('file-list');
+
+    fileInput.onchange = (e) => {
+        fileList.innerHTML = '';
+        for (const file of e.target.files) {
+            const item = document.createElement('div');
+            item.className = 'flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-100 shadow-sm animate-fade-in animate-once';
+            item.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                    <span class="font-bold text-slate-700 truncate w-48">${file.name}</span>
+                </div>
+                <span class="text-[10px] font-black uppercase text-slate-400 tracking-widest bg-white px-2 py-1 rounded-lg border border-slate-100 shadow-sm">${(file.size/1024).toFixed(1)} KB</span>
+            `;
+            fileList.appendChild(item);
+        }
+    };
+
+    async function uploadFiles() {
+        const files = fileInput.files;
+        if (files.length === 0) return;
+
+        const btn = document.getElementById('upload-btn');
+        const statusContainer = document.getElementById('status-container');
+        const statusBar = document.getElementById('status-bar');
+        const statusText = document.getElementById('status-text');
+        const statusPercent = document.getElementById('status-percent');
+        const resultsContainer = document.getElementById('results-container');
+        
+        btn.disabled = true;
+        statusContainer.classList.remove('hidden');
+        resultsContainer.classList.add('hidden');
+        resultsContainer.innerHTML = '';
+        
+        const formData = new FormData();
+        for (let i = 0; i < files.length; i++) formData.append('files', files[i]);
+
+        try {
+            statusBar.style.width = '30%';
+            statusPercent.innerText = '30%';
+            
+            const response = await fetch('/upload', { method: 'POST', body: formData });
+            const data = await response.json();
+            
+            statusBar.style.width = '100%';
+            statusPercent.innerText = '100%';
+            statusText.innerText = 'Analyse terminée !';
+            
+            resultsContainer.classList.remove('hidden');
+            
+            if (data.results) {
+                data.results.forEach(res => {
+                    const card = document.createElement('div');
+                    const isValid = res.status === 'curated';
+                    const score = res.validation?.score || 0;
+                    
+                    card.className = `p-6 rounded-3xl border-2 transition-all hover:shadow-xl card-hover ${isValid ? 'border-green-100 bg-green-50/50 text-green-800' : 'border-red-100 bg-red-50/50 text-red-800'}`;
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start mb-4">
+                            <h4 class="font-black truncate w-40 text-slate-900">${res.filename}</h4>
+                            <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${isValid ? 'bg-green-600 text-white' : 'bg-red-600 text-white'} ring-4 ${isValid ? 'ring-green-100' : 'ring-red-100'}">
+                                ${isValid ? 'Conforme' : 'Anomalie'}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between mt-auto">
+                            <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">${res.document_type}</span>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-xs font-black text-slate-700 italic">Score: ${score}%</span>
+                            </div>
+                        </div>
+                    `;
+                    resultsContainer.appendChild(card);
+                });
+            }
+        } catch (error) {
+            console.error(error);
+            statusText.innerText = 'Une erreur est survenue.';
+        } finally {
+            btn.disabled = false;
+        }
+    }
+</script>
+{% endblock %}
